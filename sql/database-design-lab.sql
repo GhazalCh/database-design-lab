@@ -1,0 +1,272 @@
+--create table Students(
+--s# bigint primary key,
+--sfname varchar(50),
+--slname varchar(50),
+--m# int,
+--phone varchar(50),
+--avg float,
+--clg# int
+--);
+--drop table Students
+--insert into Students values
+--(991120007, 'ali', 'rostami', 100, '0912222222', 18.80, 2),
+--(991120010, 'reza', 'amini', 100, '09124444444', 17.25, 2),
+--(991120023, 'sara', 'moheb', 300, '09128888888', 15.44, 1),
+--(991120011, 'zari', 'parsa', 200, '09125555555', 16.12, 3),
+--(991120031, 'sare', 'poori', 500, '09126666666', 13.41, 4),
+--(991120040, 'sina', 'salehi', 300, '09127777777', 10.35, 1),
+--(991120026, 'zari', 'pad', 500, '09121111111', 11.54, 4)
+-------------------------------------------------------------------------------------------
+--create table professors(
+--p# bigint primary key,
+--plname varchar(50),
+--esp varchar(50),
+--degree varchar(50),
+--phone varchar(50),
+--clg# int
+--);
+
+--insert into professors values
+--(119930005, 'moradi', 'computer', 'msd', '09182222222', 2),
+--(119930024, 'haghi', 'mathematic', 'msd', '09186666666', 4),
+--(119930002, 'shams', 'mathematic', 'msd', '09188888888', 4),
+--(119930041, 'ahmadian', 'computer', 'phd', '09184444444', 2),
+--(119930052, 'azizi', 'physics', 'phd', '09189999999', 3),
+--(119930013, 'mosavi', 'maaref', 'phd', '09185555555', 1),
+--(119930009, 'irani', 'maaref', 'phd', '09181111111', 1)
+-------------------------------------------------------------------------------------------
+--create table course(
+--c# int identity(1,1) primary key,
+--cname varchar(50),
+--m# int,		--major number
+--units int,
+--p# bigint,
+--clg# int
+--);
+
+--insert into course values
+--('mabani', 100, 3, 119930005, 3),
+--('andishe', 300, 2, 119930009, 3),
+--('math', 500, 3, 119930002, 4),
+--('sql', 100, 3, 119930041, 2),
+--('android', 100, 3, 119930005, 2),
+--('history', 300, 2, 119930013, 1),
+--('physics', 200, 2, 119930052, 3)
+-------------------------------------------------------------------------------------------
+--create table major(
+--m# int primary key, --major number
+--maname varchar(50) 
+--);
+
+--insert into major values
+--(100, 'computer'),
+--(300, 'maaref'),
+--(500, 'mathematic'),
+--(200, 'payeh')
+-------------------------------------------------------------------------------------------
+--create table unitselection(	--(entekhab vahed)
+--us# int identity(1,1) primary key,
+--t# int, --term number
+--s# bigint, --student number
+--c# int, --course number
+--score float
+--);
+
+--insert into unitselection values
+--(991, 991120010, 1, 18.28),
+--(992, 991120040, 4, 16.10),
+--(001, 991120023, 6, 14.34),
+--(021, 991120011, 1, 16.20),
+--(991, 991120031, 3, 15.20),
+--(032, 991120040, 2, 19),
+--(001, 991120011, 3, 15.01)
+-------------------------------------------------------------------------------------------
+--create table college(
+--clg# int identity(1,1) primary key,
+--clgname varchar(50),
+--city varchar(50),
+--plname varchar(50)
+--);
+
+--insert into college values
+--('maaref', 'hamedan', 'mosavi'),
+--('computer', 'tehran', 'ahmadian'),
+--('physics', 'esfahan', 'azizi'),
+--('math', 'tehran', 'haghi')
+-------------------------------------------------------------------------------------------
+--create table tuition(
+--tuition bit,
+--s# bigint,
+--t# int,
+--m# int
+--);
+
+--insert into tuition values
+--(1, 991120007, 991, 100),
+--(0, 991120010, 002, 100),
+--(0, 991120023, 022, 300),
+--(1, 991120031, 031, 500),
+--(1, 991120026, 032, 500),
+--(0, 991120011, 011, 200),
+--(1, 991120040, 001, 300)
+-------------------------------------------------------------------------------------------
+--create procedure newInsertToStudents 
+--@s# bigint,@sfname varchar(50),@slname varchar(50),@m# int,@phone varchar(50),@avg float,@clg# int
+--as
+--begin
+--	insert into Students
+--	values (@s#,@sfname,@slname,@m#,@phone,@avg,@clg#)
+--end
+
+--exec newInsertToStudents 991120056,'reza','razavi',100,'09123333333',18.50,2
+--select *
+--from Students
+---------------------------------------------------------------------------------------------
+--create procedure SearchProfessor	--lastname migire * neshan mide
+--@plname varchar(50)
+--as
+--begin
+--	select *
+--	from professors
+--	where plname = @plname
+--end
+
+--exec SearchProfessor 'mosavi'
+--------------------------------------------------------------------------------------------
+--create function NotPayedTyitionStudents (@tuition bit)
+--returns @payedinfo table
+--(
+--	s# bigint,
+--	sfname varchar(50),
+--	slname varchar(50),
+--	m# int,
+--	clg# int
+--)
+--as
+--begin
+--insert into @payedinfo
+--	select distinct (tuition.s#)
+--	from tuition inner join
+--	Student on Student.s#=tuition.s#
+--	where tuition.tuition=@tuition
+--return
+--end
+--------------------------------------------------------------------------------------------
+--create function AllStudentCourse (@s# bigint)		--(get id&allcourse gets show)
+--returns @course table
+--(
+--	cname varchar(50)
+--)
+--as
+--begin
+--insert into @course
+--	select distinct (course.cname)
+--	from Students inner join 
+--		unitselection on Students.s#=unitselection.s# 
+--		inner join
+--		course on unitselection.c#=course.c#
+--		where Students.s#=@s#
+--return
+--end
+
+--select *
+--from dbo.AllStudentCOurse(991120011)
+-------------------------------------------------------------------------------------------
+--create function getstudents(@plname varchar(50))
+--returns @student table
+--(
+--	sfname varchar(50),
+--	slname varchar(50)
+--)
+--as
+--begin
+--insert into @student
+--	select Students.sfname,Students.slname
+--	from Students inner join
+--		 unitselection on Students.s# = unitselection.s# 
+--		 inner join
+--		 course on unitselection.c# = course.c#
+--		 inner join
+--		 professors on course.p# = professors.p#
+--		 where professors.plname=@plname
+--		 group by Students.sfname, Students.slname
+--return
+--end
+
+--select *
+--from dbo.getstudents('ahmadian')
+-------------------------------------------------------------------------------------------
+--create function GetInfoOfCourse (@cname varchar(50))
+--returns @course table
+--(
+--	c# int,
+--	cname varchar(50),
+--	units int,
+--	plname varchar(50)
+--)
+--as
+--begin
+--insert into @course 
+--	select course.m#, course.cname, course.units, professors.plname
+--	from course inner join
+--		 professors on course.p# = professors.p#
+--		 inner join
+--		 major on course.m# = major.m#
+--		 where cname=@cname
+--return
+--end
+
+--select *
+--from  dbo.GetInfoOfCourse('andishe')
+-----------------------------------------------------------------------------------------
+--create view ProfessorsWithStudents as		--Students&professors
+--select Students.s#, Students.sfname, professors.plname,
+--	   course.p#
+--from unitselection inner join
+--	 Students on unitselection.s# = Students.s#
+--	 inner join
+--	 course on unitselection.c# = course.c#
+--	 inner join
+--	 professors on course.p# = professors.p#
+--	 where course.p# = 119930041
+
+--select *
+--from ProfessorsWithStudents
+---------------------------------------------------------------------------------------
+--create view StudentsfailCourse as
+--select Students.sfname, course.cname,
+--	   unitselection.t#, unitselection.score
+--from Students inner join
+--	 unitselection on Students.s# = unitselection.s#
+--	 inner join
+--	 course on unitselection.c# = course.c#
+--	 where unitselection.score<15
+
+--select *
+--from StudentsfailCourse
+---------------------------------------------------------------------------------------
+--create view UnitSelectionOfStudent as
+--select unitselection.s#, Students.sfname,Students.slname,
+--		unitselection.t#
+--from Students inner join
+--	 unitselection on Students.s# = unitselection.s#
+--	 group by unitselection.s#, Students.sfname, Students.slname,
+--	 unitselection.t#
+
+--select *
+--from UnitSelectionOfStudent
+---------------------------------------------------------------------------------------
+--select dbo.unitselection.score, dbo.Students.sfname, dbo.Students.slname
+--from dbo.Students inner join
+--	 dbo.unitselection on dbo.Students.s# = dbo.unitselection.s#
+--	 where dbo.unitselection.score<17								--(hadeaghal 1bar oftade)
+---------------------------------------------------------------------------------------
+--select dbo.course.p#, dbo.Students.sfname, dbo.Students.slname
+--from dbo.unitselection inner join
+--	 dbo.Students on dbo.unitselection.s# = dbo.Students.s#
+--	 inner join
+--	 dbo.course on dbo.unitselection.c# = dbo.course.c#
+--	 inner join
+--	 dbo.professors on dbo.professors.p# = dbo.course.p#
+--	 where dbo.course.p#=119930041
+
