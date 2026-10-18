@@ -50,8 +50,6 @@ Database-Design-Lab/
 ├── README.md
 ├── sql/
 │   └── database-design-lab.sql
-└── docs/
-    └── project-description.md
 ```
 
 The `docs/` directory is optional and can be omitted if no additional documentation is provided.
